@@ -1,0 +1,19 @@
+program Teste_delphi;
+
+uses
+  Vcl.Forms,
+  UPrincipal in 'UPrincipal.pas' {FrmPrincipal},
+  ClassePessoa in 'ClassePessoa.pas',
+  Dados in 'Dados.pas' {DM: TDataModule},
+  UPessoaIncluir in 'UPessoaIncluir.pas' {frmPessoaIncluir};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFrmPrincipal, FrmPrincipal);
+  Application.CreateForm(TDM, DM);
+  Application.CreateForm(TfrmPessoaIncluir, frmPessoaIncluir);
+  Application.Run;
+end.

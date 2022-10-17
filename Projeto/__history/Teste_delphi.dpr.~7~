@@ -1,0 +1,17 @@
+program Teste_delphi;
+
+uses
+  Vcl.Forms,
+  UPrincipal in 'UPrincipal.pas' {FrmPrincipal},
+  ClassePessoa in 'ClassePessoa.pas',
+  Dados in 'Dados.pas' {DataModule1: TDataModule};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFrmPrincipal, FrmPrincipal);
+  Application.CreateForm(TDataModule1, DataModule1);
+  Application.Run;
+end.

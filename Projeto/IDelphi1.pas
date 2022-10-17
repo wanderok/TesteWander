@@ -1,0 +1,91 @@
+// ************************************************************************ //
+// The types declared in this file were generated from data read from the
+// WSDL File described below:
+// WSDL     : http://www.grupounicad.com.br/cgi-bin/portalumais/Delphi_sql_Server/Delphi_API_Teste.dll/wsdl/IDelphi
+// Version  : 1.0
+// (17/10/22 16:37:48 - - $Rev: 90173 $)
+// ************************************************************************ //
+
+unit IDelphi1;
+
+interface
+
+uses Soap.InvokeRegistry, Soap.SOAPHTTPClient, System.Types, Soap.XSBuiltIns;
+
+type
+
+  // ************************************************************************ //
+  // The following types, referred to in the WSDL document are not being represented
+  // in this file. They are either aliases[@] of other types represented or were referred
+  // to but never[!] declared in the document. The types from the latter category
+  // typically map to predefined/known XML or Embarcadero types; however, they could also 
+  // indicate incorrect WSDL documents that failed to declare or import a schema type.
+  // ************************************************************************ //
+  // !:string          - "http://www.w3.org/2001/XMLSchema"[]
+
+
+  // ************************************************************************ //
+  // Namespace : urn:Delphi_WSIntf-IDelphi
+  // soapAction: urn:Delphi_WSIntf-IDelphi#Verifica_Idades
+  // transport : http://schemas.xmlsoap.org/soap/http
+  // style     : rpc
+  // use       : encoded
+  // binding   : IDelphibinding
+  // service   : IDelphiservice
+  // port      : IDelphiPort
+  // URL       : http://www.grupounicad.com.br/cgi-bin/portalumais/Delphi_sql_Server/Delphi_API_Teste.dll/soap/IDelphi
+  // ************************************************************************ //
+  IDelphi = interface(IInvokable)
+  ['{5955D235-855C-70AA-4306-CA92399ED6A5}']
+    function  Verifica_Idades(const Idade_Media: string): string; stdcall;
+  end;
+
+function GetIDelphi(UseWSDL: Boolean=System.False; Addr: string=''; HTTPRIO: THTTPRIO = nil): IDelphi;
+
+
+implementation
+  uses System.SysUtils;
+
+function GetIDelphi(UseWSDL: Boolean; Addr: string; HTTPRIO: THTTPRIO): IDelphi;
+const
+  defWSDL = 'http://www.grupounicad.com.br/cgi-bin/portalumais/Delphi_sql_Server/Delphi_API_Teste.dll/wsdl/IDelphi';
+  defURL  = 'http://www.grupounicad.com.br/cgi-bin/portalumais/Delphi_sql_Server/Delphi_API_Teste.dll/soap/IDelphi';
+  defSvc  = 'IDelphiservice';
+  defPrt  = 'IDelphiPort';
+var
+  RIO: THTTPRIO;
+begin
+  Result := nil;
+  if (Addr = '') then
+  begin
+    if UseWSDL then
+      Addr := defWSDL
+    else
+      Addr := defURL;
+  end;
+  if HTTPRIO = nil then
+    RIO := THTTPRIO.Create(nil)
+  else
+    RIO := HTTPRIO;
+  try
+    Result := (RIO as IDelphi);
+    if UseWSDL then
+    begin
+      RIO.WSDLLocation := Addr;
+      RIO.Service := defSvc;
+      RIO.Port := defPrt;
+    end else
+      RIO.URL := Addr;
+  finally
+    if (Result = nil) and (HTTPRIO = nil) then
+      RIO.Free;
+  end;
+end;
+
+
+initialization
+  { IDelphi }
+  InvRegistry.RegisterInterface(TypeInfo(IDelphi), 'urn:Delphi_WSIntf-IDelphi', '');
+  InvRegistry.RegisterDefaultSOAPAction(TypeInfo(IDelphi), 'urn:Delphi_WSIntf-IDelphi#Verifica_Idades');
+
+end.

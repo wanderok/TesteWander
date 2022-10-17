@@ -1,0 +1,178 @@
+unit ClassePessoa;
+
+interface
+
+uses Data.DB, Data.Win.ADODB, Dados, SysUtils;
+
+type
+ TPessoa = class
+  private
+    FId    : Integer;
+    FNome  : String;
+    FIdade : Integer;
+    //
+    function getFIdade: integer;
+    function getFId: Integer;
+    function getFNome: String;
+    procedure setFIdade(const Value: integer);
+    procedure setFNome(const Value: String);
+  public
+    constructor Create;
+    destructor Destroy; override;
+    Property Id   : Integer read getFId;
+    Property Nome : String  read getFNome  write setFNome;
+    Property Idade: integer read getFIdade write setFIdade;
+    //
+    function Existe(pNome:String): Boolean;
+    procedure Todos(var pQuery:TADOQuery);
+    function Quantidade:Integer;
+    function QuantidadeFormatada:String;
+    function SomaIdades:Integer;
+    function SomaIdadesFormatada:String;
+    function IdadeMedia:Real;
+    function IdadeMediaFormatada:String;
+  end;
+
+implementation
+
+{ TPessoa }
+
+
+constructor TPessoa.Create;
+begin
+end;
+
+destructor TPessoa.Destroy;
+begin
+  inherited;
+end;
+
+function TPessoa.Existe(pNome: String): Boolean;
+var qLocal:TADOQuery;
+begin
+   qLocal := TADOQuery.Create(nil);
+   qLocal.Connection := DM.AdoConnection1;
+   try
+       qLocal.close;
+       qLocal.Sql.Clear;
+       qLocal.Sql.Add('SELECT 1          ');
+       qLocal.Sql.Add('  FROM PEOPLE     ');
+       qLocal.Sql.Add('WHERE NAME = :NAME');
+       qLocal.Parameters.ParamByName('NAME').Value := pNome;
+       qLocal.Open;
+       result := not qLocal.Eof;
+       qLocal.Free;
+   except
+     qLocal.Free;
+     raise Exception.Create('Erro ao abrir tabela People');
+   end;
+end;
+
+function TPessoa.getFIdade: integer;
+begin
+   result := Self.FIdade;
+end;
+
+function TPessoa.getFId: Integer;
+begin
+   result := Self.FId;
+end;
+
+function TPessoa.getFNome: String;
+begin
+   result := Self.FNome;
+end;
+
+function TPessoa.IdadeMedia: Real;
+begin
+   result := self.SomaIdades / self.Quantidade;
+end;
+
+function TPessoa.IdadeMediaFormatada: String;
+begin
+   result := FormatFloat('#,###.##',Self.IdadeMedia);
+end;
+
+function TPessoa.Quantidade: Integer;
+var qLocal:TADOQuery;
+begin
+   qLocal := TADOQuery.Create(nil);
+   qLocal.Connection := DM.AdoConnection1;
+   try
+       qLocal.close;
+       qLocal.Sql.Clear;
+       qLocal.Sql.Add('SELECT COUNT(*) AS QUANTIDADE');
+       qLocal.Sql.Add('  FROM PEOPLE                ');
+       qLocal.Open;
+       result := qLocal.FieldByName('QUANTIDADE').AsInteger;
+       qLocal.Free;
+   except
+     qLocal.Free;
+     raise Exception.Create('Erro ao abrir tabela People');
+   end;
+end;
+
+function TPessoa.QuantidadeFormatada: String;
+begin
+   result := FormatFloat('#,##0',Self.Quantidade);
+end;
+
+procedure TPessoa.setFIdade(const Value: integer);
+begin
+   if Value <= 0 then
+     raise Exception.Create('Idade inválida. Deve ser maior que 1.');
+   Self.FIdade := Value;
+end;
+
+procedure TPessoa.setFNome(const Value: String);
+begin
+   if Value = '' then
+     raise Exception.Create('Nome inválido. Precisa ser informado.');
+   if length(Value) > 100 then
+     raise Exception.Create('Nome inválido. Tamanho máximo de 100 caracteres.');
+
+   if self.Existe(Value) then
+     raise Exception.Create('Já existe uma pessoa cadatrada com este nome.');
+
+   Self.FNome := Value;
+end;
+
+function TPessoa.SomaIdades: Integer;
+var qLocal:TADOQuery;
+begin
+   qLocal := TADOQuery.Create(nil);
+   qLocal.Connection := DM.AdoConnection1;
+   try
+       qLocal.close;
+       qLocal.Sql.Clear;
+       qLocal.Sql.Add('SELECT SUM(AGE) AS SOMAIDADES');
+       qLocal.Sql.Add('  FROM PEOPLE                ');
+       qLocal.Open;
+       result := qLocal.FieldByName('SOMAIDADES').AsInteger;
+       qLocal.Free;
+   except
+     qLocal.Free;
+     raise Exception.Create('Erro ao abrir tabela People');
+   end;
+end;
+
+function TPessoa.SomaIdadesFormatada: String;
+begin
+     result := FormatFloat('#,##0',Self.SomaIdades);
+end;
+
+procedure TPessoa.Todos(var pQuery:TADOQuery);
+begin
+    try
+      pQuery.Close;
+      pQuery.Sql.Clear;
+      pQuery.Sql.Add('select *                ');
+      pQuery.Sql.Add('  from teste.dbo.people ');
+      pQuery.Sql.Add(' order by Name          ');
+      pQuery.Open;
+    except
+      raise Exception.Create('Erro ao abrir tabela People');
+    end;
+end;
+
+end.
